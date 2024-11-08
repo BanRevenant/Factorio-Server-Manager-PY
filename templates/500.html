@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% set hide_layout = true %}
+
+{% block content %}
+<div class="flex items-center justify-center min-h-screen bg-black p-4">
+    <div class="panel bg-gray-dark max-w-lg w-full">
+        <div class="panel-header">
+            <h1 class="text-xl text-dirty-white font-bold">500 - Server Error</h1>
+        </div>
+        <div class="panel-content">
+            <p class="text-white mb-4">An internal server error occurred.</p>
+            <a href="/" class="btn btn-default">Return to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

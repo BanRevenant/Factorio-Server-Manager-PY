@@ -1,0 +1,403 @@
+{% extends "base.html" %}
+
+{% block title %}FSM - Mods Management{% endblock %}
+
+{% block head %}
+<script src="{{ url_for('static', filename='js/mods.js') }}" defer></script>
+{% endblock %}
+
+{% block content %}
+<!-- Server Running Warning -->
+<div id="server-running-warning" class="panel bg-gray-dark rounded-sm shadow-xl mb-6 hidden">
+    <div class="panel-content bg-gray-medium shadow-inner p-4">
+        <div class="text-red font-bold text-xl flex items-center">
+            <i class="fas fa-exclamation-triangle mr-2"></i>
+            Changing mods is disabled while the server is running!
+        </div>
+    </div>
+</div>
+
+<!-- Mod Management Tabs -->
+<div class="panel bg-gray-dark rounded-sm shadow-xl">
+
+<div class="panel-header px-4 py-2 flex justify-between items-center">
+        <h2 class="text-xl text-dirty-white font-bold">Mods</h2>
+		        <div class="flex gap-2">
+
+        </div>
+    </div>
+	
+	
+    <div id="mod-management-tabs" class="tab-container">
+        <!-- Install Mod Tab -->
+		
+        <div data-tab="install" data-tab-title="Install Mod">
+            <!-- Factorio Login Form -->
+			
+            <div id="factorio-login-form" class="space-y-4">
+                <div class="flex gap-4">
+                    <div class="flex-1">
+                        <label class="form-label" for="username">Username</label>
+                        <input type="text" id="username" name="username" class="form-control" required>
+                        <span class="form-error hidden" data-error="username"></span>
+                    </div>
+                    <div class="flex-1">
+                        <label class="form-label" for="password">Password</label>
+                        <div class="relative">
+                            <input type="password" id="password" name="password" class="form-control" required>
+                            <button type="button" 
+                                    class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                                    onclick="modsManager.togglePasswordVisibility('password')">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <span class="form-error hidden" data-error="password"></span>
+                    </div>
+                </div>
+                <div>
+                    <button type="button" class="btn btn-default" onclick="modsManager.loginToFactorio()">
+                        <i class="fas fa-sign-in-alt mr-2"></i>
+                        Login to Factorio
+                    </button>
+                </div>
+            </div>
+
+<!-- Mod Search Form -->
+<div id="mod-search-form" class="space-y-4 hidden">
+    <div class="relative">
+        <label class="form-label" for="mod-search">Search Mods</label>
+        <div class="flex gap-2">
+            <div class="search-container">  <!-- Changed this line -->
+                <i class="fas fa-search search-icon"></i>  <!-- Changed position and classes -->
+                <input type="text" 
+                       id="mod-search" 
+                       class="search-input"    <!-- Changed to search-input -->
+                       placeholder="Search by name or author..."
+                       autocomplete="off">
+            </div>
+            <button type="button" id="install-mod-btn" class="btn btn-default" disabled>
+                <span class="flex items-center">   <!-- Added span wrapper -->
+                    <i class="fas fa-download"></i>
+                    <span class="ml-2">Install Selected</span>  <!-- Changed mr-2 to separate element -->
+                </span>
+            </button>
+            <button type="button" class="btn btn-danger" onclick="modsManager.logoutFromFactorio()">
+                <span class="flex items-center">   <!-- Added span wrapper -->
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="ml-2">Logout</span>  <!-- Changed mr-2 to separate element -->
+                </span>
+            </button>
+        </div>
+    </div>
+                
+                <!-- Selected Mod Info -->
+                <div id="selected-mod-info" class="hidden">
+                    <div class="bg-gray-dark rounded p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="text-lg font-bold text-dirty-white" id="selected-mod-title"></h3>
+                                <p class="text-sm text-gray-400" id="selected-mod-author"></p>
+                            </div>
+                            <div class="text-sm">
+                                <span class="text-gray-400">Downloads:</span>
+                                <span id="selected-mod-downloads" class="text-dirty-white"></span>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <p id="selected-mod-description" class="text-sm"></p>
+                        </div>
+                        <div class="mt-4 flex gap-2">
+                            <div class="text-sm">
+                                <span class="text-gray-400">Latest version:</span>
+                                <span id="selected-mod-version" class="text-dirty-white"></span>
+                            </div>
+                            <div class="text-sm">
+                                <span class="text-gray-400">Game version:</span>
+                                <span id="selected-mod-game-version" class="text-dirty-white"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Mod Tab -->
+        <div data-tab="upload" data-tab-title="Upload Mod">
+            <form id="upload-mod-form" class="space-y-4">
+                <div class="form-group">
+                    <label class="form-label" for="mod_file">Mod File</label>
+                    <div class="relative">
+                        <input type="file" 
+                               id="mod_file" 
+                               name="mod_file"
+                               class="hidden" 
+                               accept=".zip"
+                               required>
+                        <div class="flex">
+                            <div class="form-control cursor-pointer flex-grow" id="mod-file-name-display">
+                                Select File...
+                            </div>
+                            <button type="button" 
+                                    class="btn btn-default ml-2" 
+                                    onclick="document.getElementById('mod_file').click()">
+                                <i class="fas fa-folder-open"></i>
+                            </button>
+                        </div>
+                        <div id="upload-drop-zone" 
+                             class="border-2 border-dashed border-gray-400 rounded-lg p-8 text-center mt-4 hidden">
+                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-2"></i>
+                            <p class="text-gray-400">Drop mod file here to upload</p>
+                        </div>
+                        <span class="form-error hidden" data-error="mod_file"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-upload mr-2"></i>
+                        Upload Mod
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Load Mods from Save Tab -->
+        <div data-tab="load" data-tab-title="Load from Save">
+            <div id="factorio-auth-required" class="hidden">
+                <div class="text-center py-4">
+                    <i class="fas fa-lock text-4xl text-gray-400 mb-2"></i>
+                    <p class="text-gray-400">Please login to Factorio first</p>
+                    <button class="btn btn-default mt-4" onclick="modsManager.switchToInstallTab()">
+                        Go to Login
+                    </button>
+                </div>
+            </div>
+
+            <div id="load-mods-form" class="space-y-4 hidden">
+                <div class="form-group">
+                    <label class="form-label" for="save-select">Select Save File</label>
+                    <select id="save-select" name="save" class="form-control" required>
+                        <option value="">Loading saves...</option>
+                    </select>
+                    <span class="form-error hidden" data-error="save"></span>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-success" onclick="modsManager.loadModsFromSave()">
+                        <i class="fas fa-sync mr-2"></i>
+                        Load Mods
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Installed Mods Panel -->
+<div class="panel bg-gray-dark rounded-sm shadow-xl mb-6">
+    <div class="panel-header px-4 py-2 flex justify-between items-center">
+        <h2 class="text-xl text-dirty-white font-bold">Installed Mods</h2>
+        <div class="flex gap-2">
+            <div class="search-container">
+                <input type="text" 
+                       id="installed-mods-search" 
+                       class="form-control" 
+                       placeholder="Filter mods...">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+            <button type="button" 
+                    class="btn btn-danger" 
+                    onclick="modsManager.deleteAllMods()"
+                    id="delete-all-mods">
+                <i class="fas fa-trash-alt mr-2"></i>
+                Delete All
+            </button>
+            <button type="button" 
+                    class="btn btn-default" 
+                    onclick="modsManager.updateAllMods()"
+                    id="update-all-mods">
+                <i class="fas fa-sync mr-2"></i>
+                Update All
+            </button>
+            <a href="/api/mods/download" 
+               class="btn btn-default">
+                <i class="fas fa-download mr-2"></i>
+                Download All
+            </a>
+        </div>
+    </div>
+    <div class="panel-content bg-gray-medium shadow-inner p-4">
+        <div class="overflow-x-auto">
+            <table class="table w-full">
+                <thead>
+                    <tr>
+                        <th class="text-left">Name</th>
+                        <th class="text-center w-24">Enabled</th>
+                        <th class="text-center w-32">Compatibility</th>
+                        <th class="text-left w-32">Version</th>
+                        <th class="text-left w-32">Game Version</th>
+                        <th class="text-right w-32">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="installed-mods-list">
+                    <tr>
+                        <td colspan="6" class="text-center py-4">
+                            <i class="fas fa-spinner fa-spin mr-2"></i>
+                            Loading mods...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Empty State -->
+        <div id="no-mods" class="text-center py-8 hidden">
+            <i class="fas fa-puzzle-piece text-4xl text-gray-400 mb-2"></i>
+            <p class="text-gray-400">No mods installed</p>
+        </div>
+    </div>
+</div>
+
+<!-- Mod Packs Panel -->
+<div class="panel bg-gray-dark rounded-sm shadow-xl">
+    <div class="panel-header px-4 py-2 flex justify-between items-center">
+        <h2 class="text-xl text-dirty-white font-bold">Mod Packs</h2>
+        <button type="button" 
+                class="btn btn-sm btn-default" 
+                onclick="modsManager.createModPack()">
+            <i class="fas fa-plus mr-2"></i>
+            Create Pack from Current Mods
+        </button>
+    </div>
+    <div class="panel-content bg-gray-medium shadow-inner p-4">
+        <div id="mod-packs-list" class="space-y-6">
+            <!-- Mod packs will be inserted here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="no-mod-packs" class="text-center py-8 hidden">
+            <i class="fas fa-box text-4xl text-gray-400 mb-2"></i>
+            <p class="text-gray-400">No mod packs created</p>
+        </div>
+    </div>
+</div>
+
+<!-- Templates -->
+<!-- Installed Mod Row Template -->
+<template id="installed-mod-row-template">
+    <tr class="hover:bg-gray-dark transition-colors">
+        <td class="py-2">
+            <div class="font-medium">%title%</div>
+            <div class="text-sm text-gray-400">%name%</div>
+        </td>
+        <td class="py-2 text-center">
+            <button onclick="modsManager.toggleMod('%name%')"
+                    class="mod-toggle-button %toggle-class%"
+                    %disabled%>
+                <i class="fas fa-%toggle-icon%"></i>
+            </button>
+        </td>
+        <td class="py-2 text-center">
+            <span class="status-indicator %compatibility-class%">
+                <i class="fas fa-%compatibility-icon% mr-1"></i>
+                %compatibility-text%
+            </span>
+        </td>
+        <td class="py-2">
+            <div class="flex items-center">
+                <span>%version%</span>
+                %update-button%
+            </div>
+        </td>
+        <td class="py-2">%game-version%</td>
+        <td class="py-2 text-right">
+            <button class="text-red hover:text-red-light"
+                    onclick="modsManager.deleteMod('%name%')"
+                    title="Delete Mod"
+                    %disabled%>
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </td>
+    </tr>
+</template>
+
+<!-- Mod Pack Template -->
+<template id="mod-pack-template">
+    <div class="mod-pack bg-gray-dark rounded-sm p-4">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg text-dirty-white font-bold">%name%</h3>
+            <div class="flex gap-2">
+                <button onclick="modsManager.loadModPack('%name%')"
+                        class="text-blue hover:text-blue-light"
+                        title="Load Mod Pack">
+                    <i class="fas fa-upload"></i>
+                </button>
+                <button onclick="modsManager.deleteModPack('%name%')"
+                        class="text-red hover:text-red-light"
+                        title="Delete Mod Pack">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="table w-full">
+                <thead>
+                    <tr>
+                        <th class="text-left">Name</th>
+                        <th class="text-center w-24">Enabled</th>
+                        <th class="text-left w-32">Version</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    %mods%
+                </tbody>
+            </table>
+        </div>
+    </div>
+</template>
+
+<!-- Modal Templates -->
+<!-- Create Mod Pack Modal -->
+<template id="create-mod-pack-modal-template">
+    <div class="modal-content">
+        <h3 class="text-lg font-bold mb-4">Create Mod Pack</h3>
+        <form id="create-mod-pack-form" class="space-y-4">
+            <div class="form-group">
+                <label class="form-label" for="pack-name">Pack Name</label>
+                <input type="text" 
+                       id="pack-name" 
+                       name="name" 
+                       class="form-control" 
+                       required
+                       placeholder="Enter pack name">
+                <span class="form-error hidden" data-error="name"></span>
+            </div>
+            <div class="flex justify-end space-x-2">
+                <button type="button" class="btn btn-default" onclick="modsManager.closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-success">Create Pack</button>
+            </div>
+        </form>
+    </div>
+</template>
+
+<!-- Confirmation Modal Templates -->
+<template id="delete-all-mods-modal-template">
+    <div class="modal-content">
+        <h3 class="text-lg font-bold mb-4">Delete All Mods</h3>
+        <p class="mb-4">Are you sure you want to delete all installed mods? This action cannot be undone.</p>
+        <div class="flex justify-end space-x-2">
+            <button class="btn btn-default" onclick="modsManager.closeModal()">Cancel</button>
+            <button class="btn btn-danger" onclick="modsManager.confirmDeleteAll()">Delete All</button>
+        </div>
+    </div>
+</template>
+
+<template id="load-mod-pack-modal-template">
+    <div class="modal-content">
+        <h3 class="text-lg font-bold mb-4">Load Mod Pack</h3>
+        <p class="mb-4">Loading mod pack "%name%" will replace all currently installed mods. Continue?</p>
+        <div class="flex justify-end space-x-2">
+            <button class="btn btn-default" onclick="modsManager.closeModal()">Cancel</button>
+            <button class="btn btn-success" onclick="modsManager.confirmLoadPack()">Load Pack</button>
+        </div>
+    </div>
+</template>
+{% endblock %}

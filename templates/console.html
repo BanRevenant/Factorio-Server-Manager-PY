@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block title %}FSM - Console{% endblock %}
+
+{% block head %}
+<script src="{{ url_for('static', filename='js/console.js') }}" defer></script>
+{% endblock %}
+
+{% block content %}
+<div class="panel bg-gray-dark rounded-sm shadow-xl">
+    <div class="panel-header px-4 py-2 flex justify-between items-center">
+        <h2 class="text-xl text-dirty-white font-bold">Console</h2>
+        <div class="flex items-center space-x-4">
+            <!-- Console Controls -->
+            <div class="flex items-center space-x-2">
+                <label class="text-white flex items-center">
+                    <input type="checkbox" 
+                           id="auto-scroll" 
+                           class="form-checkbox h-4 w-4 text-blue rounded border-gray-300" 
+                           checked>
+                    <span class="ml-2">Auto-scroll</span>
+                </label>
+                <button type="button" 
+                        id="clear-console" 
+                        class="btn btn-sm btn-danger"
+                        title="Clear console">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+                <button type="button" 
+                        id="copy-console" 
+                        class="btn btn-sm btn-default"
+                        title="Copy to clipboard">
+                    <i class="fas fa-copy"></i>
+                </button>
+            </div>
+
+            <!-- Log Level Filter -->
+            <div class="flex items-center space-x-2">
+                <label class="text-white">Level:</label>
+                <select id="log-level" class="form-control w-32">
+                    <option value="all">All</option>
+                    <option value="info">Info</option>
+                    <option value="warning">Warning</option>
+                    <option value="error">Error</option>
+                    <option value="debug">Debug</option>
+                </select>
+            </div>
+
+            <!-- Log Filter -->
+            <div class="search-container">
+                <input type="text" 
+                       id="log-filter" 
+                       class="form-control w-full" 
+                       placeholder="Filter logs...">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel-content bg-gray-medium shadow-inner p-4">
+        <div id="console-wrapper" class="relative">
+            <!-- Console Output -->
+            <div id="console-output" 
+                 class="bg-black font-mono text-sm p-4 rounded min-h-[400px] max-h-[600px] overflow-y-auto mb-4">
+                <div id="log-lines" class="space-y-1">
+                    <!-- Log lines will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Console Input Area -->
+            <div id="console-input-area" class="relative">
+                <div class="flex items-center bg-black rounded p-2">
+                    <span class="text-green mr-2">&gt;</span>
+                    <input type="text" 
+                           id="console-input" 
+                           class="flex-grow bg-transparent text-white font-mono focus:outline-none" 
+                           placeholder="Enter command..."
+                           autocomplete="off"
+                           disabled>
+                    <div id="console-status" class="ml-2">
+                        <span class="px-2 py-1 rounded text-sm status-indicator"></span>
+                    </div>
+                </div>
+
+                <!-- Command History Popup -->
+                <div id="command-history-popup" 
+                     class="absolute bottom-full left-0 right-0 bg-gray-dark rounded-t shadow-lg mb-1 hidden">
+                    <div class="p-2 text-sm text-gray-400">
+                        Previous commands (↑↓ to navigate):
+                    </div>
+                    <div id="command-history-list" class="max-h-32 overflow-y-auto">
+                        <!-- Command history items will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- Command Suggestions -->
+                <div id="command-suggestions" 
+                     class="absolute top-full left-0 right-0 bg-gray-dark rounded-b shadow-lg mt-1 hidden">
+                    <div id="suggestions-list" class="max-h-32 overflow-y-auto">
+                        <!-- Command suggestions will be inserted here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Server Offline Message -->
+            <div id="server-offline-message" class="hidden">
+                <div class="text-center py-8">
+                    <i class="fas fa-plug text-4xl text-red mb-2"></i>
+                    <p class="text-red-light">
+                        The console is not available because Factorio is not running.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Connection Status -->
+            <div id="connection-status" 
+                 class="fixed bottom-4 right-4 px-3 py-1 rounded text-sm hidden">
+                <i class="fas fa-circle mr-1"></i>
+                <span></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Templates -->
+<!-- Log Line Template -->
+<template id="log-line-template">
+    <div class="log-line" data-level="%level%">
+        <span class="text-gray-400">[%time%]</span>
+        <span class="log-level %level-class%">[%level%]</span>
+        <span class="log-message">%message%</span>
+    </div>
+</template>
+
+<!-- Command History Item Template -->
+<template id="command-history-item-template">
+    <div class="command-history-item px-3 py-1 cursor-pointer hover:bg-gray-medium">
+        <span class="text-gray-400 mr-2">[%time%]</span>
+        <span class="text-white">%command%</span>
+    </div>
+</template>
+
+<!-- Command Suggestion Template -->
+<template id="command-suggestion-template">
+    <div class="command-suggestion px-3 py-1 cursor-pointer hover:bg-gray-medium">
+        <span class="font-bold">%command%</span>
+        <span class="text-gray-400 ml-2">%description%</span>
+    </div>
+</template>
+
+<!-- Common Command Groups -->
+<template id="command-groups">
+{
+    "Server Control": {
+        "/stop": "Save and stop the server",
+        "/start": "Start the server",
+        "/restart": "Restart the server",
+        "/save": "Save the current game"
+    },
+    "Player Management": {
+        "/players": "List online players",
+        "/kick": "Kick a player from the server",
+        "/ban": "Ban a player from the server",
+        "/unban": "Remove a player's ban"
+    },
+    "Game Control": {
+        "/time": "Show or set game time",
+        "/peaceful": "Toggle peaceful mode",
+        "/day": "Set time to day",
+        "/night": "Set time to night"
+    },
+    "Chat": {
+        "/shout": "Broadcast message to all players",
+        "/whisper": "Send private message to player"
+    }
+}
+</template>
+{% endblock %}

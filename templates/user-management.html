@@ -1,0 +1,346 @@
+{% extends "base.html" %}
+
+{% block title %}FSM - User Management{% endblock %}
+
+{% block head %}
+<script src="{{ url_for('static', filename='js/user-management.js') }}" defer></script>
+{% endblock %}
+
+{% block content %}
+<!-- Users List Panel -->
+<div class="panel bg-gray-dark rounded-sm shadow-xl mb-6">
+    <div class="panel-header px-4 py-2 flex justify-between items-center">
+        <h2 class="text-xl text-dirty-white font-bold">Users</h2>
+        <div class="flex items-center space-x-2">
+            <div class="relative">
+                <input type="text" 
+                       id="user-search" 
+                       class="form-control" 
+                       placeholder="Search users...">
+                <i class="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            </div>
+            <button type="button" 
+                    id="refresh-users" 
+                    class="btn btn-sm btn-default"
+                    title="Refresh users list">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+        </div>
+    </div>
+    <div class="panel-content bg-gray-medium shadow-inner p-4">
+        <div class="overflow-x-auto">
+            <table class="table w-full">
+                <thead>
+                    <tr>
+                        <th class="text-left">Username</th>
+                        <th class="text-left">Role</th>
+                        <th class="text-left">Email</th>
+                        <th class="text-left">Last Login</th>
+                        <th class="text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="users-list">
+                    <!-- Loading State -->
+                    <tr>
+                        <td colspan="5" class="text-center py-4">
+                            <i class="fas fa-spinner fa-spin mr-2"></i>
+                            Loading users...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Empty State -->
+        <div id="no-users" class="text-center py-8 hidden">
+            <i class="fas fa-users text-4xl text-gray-400 mb-2"></i>
+            <p class="text-gray-400">No users found</p>
+        </div>
+    </div>
+</div>
+
+<!-- Change Password Panel -->
+<div class="panel bg-gray-dark rounded-sm shadow-xl mb-6">
+    <div class="panel-header px-4 py-2">
+        <h2 class="text-xl text-dirty-white font-bold">Change Password</h2>
+    </div>
+    <div class="panel-content bg-gray-medium shadow-inner p-4">
+        <form id="change-password-form" class="max-w-lg">
+            <div class="space-y-4">
+                <!-- Current Password -->
+                <div class="form-group">
+                    <label class="form-label" for="old-password">Current Password</label>
+                    <div class="relative">
+                        <input type="password" 
+                               id="old-password" 
+                               name="old_password" 
+                               class="form-control" 
+                               required>
+                        <button type="button" 
+                                class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                                onclick="userManager.togglePasswordVisibility('old-password')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <span class="form-error hidden" data-error="old_password"></span>
+                </div>
+
+                <!-- New Password -->
+                <div class="form-group">
+                    <label class="form-label" for="new-password">New Password</label>
+                    <div class="relative">
+                        <input type="password" 
+                               id="new-password" 
+                               name="new_password" 
+                               class="form-control" 
+                               required>
+                        <button type="button" 
+                                class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                                onclick="userManager.togglePasswordVisibility('new-password')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <span class="form-error hidden" data-error="new_password"></span>
+                    <div class="password-strength mt-2" id="password-strength"></div>
+                </div>
+
+                <!-- Confirm New Password -->
+                <div class="form-group">
+                    <label class="form-label" for="new-password-confirm">Confirm New Password</label>
+                    <div class="relative">
+                        <input type="password" 
+                               id="new-password-confirm" 
+                               name="new_password_confirmation" 
+                               class="form-control" 
+                               required>
+                        <button type="button" 
+                                class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                                onclick="userManager.togglePasswordVisibility('new-password-confirm')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <span class="form-error hidden" data-error="new_password_confirmation"></span>
+                </div>
+
+                <div>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-key mr-2"></i>
+                        Change Password
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Create User Panel -->
+<div class="panel bg-gray-dark rounded-sm shadow-xl">
+    <div class="panel-header px-4 py-2">
+        <h2 class="text-xl text-dirty-white font-bold">Create User</h2>
+    </div>
+    <div class="panel-content bg-gray-medium shadow-inner p-4">
+        <form id="create-user-form" class="max-w-lg">
+            <div class="space-y-4">
+                <!-- Username -->
+                <div class="form-group">
+                    <label class="form-label" for="username">Username</label>
+                    <input type="text" 
+                           id="username" 
+                           name="username" 
+                           class="form-control" 
+                           required>
+                    <span class="form-error hidden" data-error="username"></span>
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label class="form-label" for="email">Email</label>
+                    <input type="email" 
+                           id="email" 
+                           name="email" 
+                           class="form-control" 
+                           required>
+                    <span class="form-error hidden" data-error="email"></span>
+                </div>
+
+                <!-- Role -->
+                <div class="form-group">
+                    <label class="form-label" for="role">Role</label>
+                    <select id="role" 
+                            name="role" 
+                            class="form-control" 
+                            required>
+                        <option value="admin">Admin</option>
+                        <option value="user">User</option>
+                        <option value="readonly">Read Only</option>
+                    </select>
+                    <span class="form-error hidden" data-error="role"></span>
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <div class="relative">
+                        <input type="password" 
+                               id="password" 
+                               name="password" 
+                               class="form-control" 
+                               required>
+                        <button type="button" 
+                                class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                                onclick="userManager.togglePasswordVisibility('password')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <span class="form-error hidden" data-error="password"></span>
+                    <div class="password-strength mt-2" id="new-password-strength"></div>
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="form-group">
+                    <label class="form-label" for="password-confirm">Confirm Password</label>
+                    <div class="relative">
+                        <input type="password" 
+                               id="password-confirm" 
+                               name="password_confirmation" 
+                               class="form-control" 
+                               required>
+                        <button type="button" 
+                                class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                                onclick="userManager.togglePasswordVisibility('password-confirm')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <span class="form-error hidden" data-error="password_confirmation"></span>
+                </div>
+
+                <div>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-user-plus mr-2"></i>
+                        Create User
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Templates -->
+<!-- User Row Template -->
+<template id="user-row-template">
+    <tr class="hover:bg-gray-dark">
+        <td class="py-2">%username%</td>
+        <td class="py-2">
+            <span class="px-2 py-1 rounded text-sm %role-class%">%role%</span>
+        </td>
+        <td class="py-2">%email%</td>
+        <td class="py-2">%last-login%</td>
+        <td class="py-2 text-right">
+            <div class="flex justify-end space-x-2">
+                <button class="text-blue hover:text-blue-light"
+                        onclick="userManager.editUser('%username%')"
+                        title="Edit User">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="text-red hover:text-red-light %delete-class%"
+                        onclick="userManager.deleteUser('%username%')"
+                        title="Delete User"
+                        %delete-disabled%>
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>
+        </td>
+    </tr>
+</template>
+
+<!-- Edit User Modal Template -->
+<template id="edit-user-modal-template">
+    <div class="modal-content">
+        <h3 class="text-lg font-bold mb-4">Edit User - %username%</h3>
+        <form id="edit-user-form" class="space-y-4">
+            <input type="hidden" name="username" value="%username%">
+            
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" 
+                       name="email" 
+                       class="form-control" 
+                       value="%email%" 
+                       required>
+                <span class="form-error hidden" data-error="email"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Role</label>
+                <select name="role" 
+                        class="form-control" 
+                        required 
+                        %role-disabled%>
+                    <option value="admin" %admin-selected%>Admin</option>
+                    <option value="user" %user-selected%>User</option>
+                    <option value="readonly" %readonly-selected%>Read Only</option>
+                </select>
+                <span class="form-error hidden" data-error="role"></span>
+            </div>
+
+            <div class="flex justify-end space-x-2">
+                <button type="button" 
+                        class="btn btn-default" 
+                        onclick="userManager.closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-success">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</template>
+
+<!-- Delete User Modal Template -->
+<template id="delete-user-modal-template">
+    <div class="modal-content">
+        <h3 class="text-lg font-bold mb-4">Delete User</h3>
+        <p class="mb-4">Are you sure you want to delete user "%username%"? This action cannot be undone.</p>
+        <div class="flex justify-end space-x-2">
+            <button type="button" 
+                    class="btn btn-default" 
+                    onclick="userManager.closeModal()">Cancel</button>
+            <button type="button" 
+                    class="btn btn-danger" 
+                    onclick="userManager.confirmDeleteUser()">Delete User</button>
+        </div>
+    </div>
+</template>
+
+<!-- Password Strength Template -->
+<template id="password-strength-template">
+    <div class="space-y-1">
+        <div class="flex justify-between text-sm">
+            <span>Password Strength</span>
+            <span class="%strength-class%">%strength-text%</span>
+        </div>
+        <div class="w-full bg-gray-dark rounded-full h-2">
+            <div class="h-full rounded-full %bar-class%" style="width: %strength%%;"></div>
+        </div>
+        <ul class="text-sm space-y-1 text-gray-400">
+            <li class="%length-class%">
+                <i class="fas fa-%length-icon% mr-1"></i>
+                At least 8 characters
+            </li>
+            <li class="%uppercase-class%">
+                <i class="fas fa-%uppercase-icon% mr-1"></i>
+                Contains uppercase letter
+            </li>
+            <li class="%lowercase-class%">
+                <i class="fas fa-%lowercase-icon% mr-1"></i>
+                Contains lowercase letter
+            </li>
+            <li class="%number-class%">
+                <i class="fas fa-%number-icon% mr-1"></i>
+                Contains number
+            </li>
+            <li class="%special-class%">
+                <i class="fas fa-%special-icon% mr-1"></i>
+                Contains special character
+            </li>
+        </ul>
+    </div>
+</template>
+{% endblock %}

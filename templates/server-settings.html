@@ -1,0 +1,338 @@
+{% extends "base.html" %}
+
+{% block title %}FSM - Server Settings{% endblock %}
+
+{% block head %}
+<script src="{{ url_for('static', filename='js/server-settings.js') }}" defer></script>
+{% endblock %}
+
+{% block content %}
+<form id="server-settings-form" class="mb-4">
+    <div class="panel bg-gray-dark rounded-sm shadow-xl">
+        <div class="panel-header px-4 py-2 flex justify-between items-center">
+            <h2 class="text-xl text-dirty-white font-bold">Server Settings</h2>
+            <div class="flex items-center space-x-2">
+                <!-- Settings Actions -->
+                <button type="button" 
+                        id="import-settings" 
+                        class="btn btn-sm btn-default"
+                        title="Import settings">
+                    <i class="fas fa-file-import mr-1"></i>
+                    Import
+                </button>
+                <button type="button" 
+                        id="export-settings" 
+                        class="btn btn-sm btn-default"
+                        title="Export settings">
+                    <i class="fas fa-file-export mr-1"></i>
+                    Export
+                </button>
+                <button type="button" 
+                        id="reset-settings" 
+                        class="btn btn-sm btn-danger"
+                        title="Reset to defaults">
+                    <i class="fas fa-undo mr-1"></i>
+                    Reset
+                </button>
+                <button type="submit" 
+                        class="btn btn-sm btn-success"
+                        title="Save changes">
+                    <i class="fas fa-save mr-1"></i>
+                    Save
+                </button>
+            </div>
+        </div>
+
+        <!-- Settings Search -->
+        <div class="bg-gray-dark border-t border-b border-gray-600 px-4 py-3">
+            <div class="flex gap-4">
+                <div class="search-container">
+                    <input type="text" 
+                           id="settings-search" 
+                           class="form-control w-full" 
+                           placeholder="Search settings...">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+                <select id="settings-category" class="form-control w-48">
+                    <option value="all">All Categories</option>
+                    <option value="general">General</option>
+                    <option value="multiplayer">Multiplayer</option>
+                    <option value="security">Security</option>
+                    <option value="performance">Performance</option>
+                    <option value="advanced">Advanced</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="panel-content bg-gray-medium shadow-inner p-4">
+            <!-- Loading State -->
+            <div id="settings-loading" class="text-center py-8">
+                <div class="loading-spinner mb-2"></div>
+                <div class="text-white">Loading settings...</div>
+            </div>
+
+            <!-- Settings Content -->
+            <div id="settings-wrapper" class="space-y-6 hidden">
+                <!-- General Settings Section -->
+                <div class="settings-section" data-category="general">
+                    <h3 class="text-lg text-dirty-white font-bold mb-4">General Settings</h3>
+                    <div class="space-y-4">
+                        <!-- Name & Description -->
+                        <div class="form-group">
+                            <label class="form-label" for="name">Server Name</label>
+                            <input type="text" 
+                                   id="name" 
+                                   name="name" 
+                                   class="form-control" 
+                                   required>
+                            <span class="form-help">The name of your server as it appears in the server list</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="description">Description</label>
+                            <textarea id="description" 
+                                      name="description" 
+                                      class="form-control h-24" 
+                                      required></textarea>
+                            <span class="form-help">A brief description of your server</span>
+                        </div>
+
+                        <!-- Tags -->
+                        <div class="form-group">
+                            <label class="form-label" for="tags">Tags</label>
+                            <input type="text" 
+                                   id="tags" 
+                                   name="tags" 
+                                   class="form-control" 
+                                   placeholder="Enter tags, comma separated">
+                            <span class="form-help">Tags help players find your server (e.g., vanilla, modded, peaceful)</span>
+                        </div>
+
+                        <!-- Max Players -->
+                        <div class="form-group">
+                            <label class="form-label" for="max_players">Max Players</label>
+                            <input type="number" 
+                                   id="max_players" 
+                                   name="max_players" 
+                                   class="form-control" 
+                                   min="1" 
+                                   max="500" 
+                                   required>
+                            <span class="form-help">Maximum number of players allowed on the server</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Multiplayer Settings Section -->
+                <div class="settings-section" data-category="multiplayer">
+                    <h3 class="text-lg text-dirty-white font-bold mb-4">Multiplayer Settings</h3>
+                    <div class="space-y-4">
+                        <!-- Visibility -->
+                        <div class="form-group">
+                            <label class="form-label">Server Visibility</label>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="checkbox" 
+                                           name="visibility[public]" 
+                                           class="form-checkbox">
+                                    <span class="ml-2">Public</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="checkbox" 
+                                           name="visibility[lan]" 
+                                           class="form-checkbox">
+                                    <span class="ml-2">LAN</span>
+                                </label>
+                            </div>
+                            <span class="form-help">Where your server will be visible</span>
+                        </div>
+
+                        <!-- Game Password -->
+                        <div class="form-group">
+                            <label class="form-label" for="game_password">Game Password</label>
+                            <div class="relative">
+                                <input type="password" 
+                                       id="game_password" 
+                                       name="game_password" 
+                                       class="form-control">
+                                <button type="button" 
+                                        class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                                        onclick="serverSettings.togglePasswordVisibility('game_password')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <span class="form-help">Leave empty for no password</span>
+                        </div>
+
+                        <!-- Admins -->
+                        <div class="form-group">
+                            <label class="form-label" for="admins">Administrators</label>
+                            <input type="text" 
+                                   id="admins" 
+                                   name="admins" 
+                                   class="form-control" 
+                                   placeholder="Enter usernames, comma separated">
+                            <span class="form-help">Players who have admin privileges</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Settings Section -->
+                <div class="settings-section" data-category="security">
+                    <h3 class="text-lg text-dirty-white font-bold mb-4">Security Settings</h3>
+                    <div class="space-y-4">
+                        <!-- Auto Save -->
+                        <div class="form-group">
+                            <label class="form-label" for="autosave_interval">Auto Save Interval (minutes)</label>
+                            <input type="number" 
+                                   id="autosave_interval" 
+                                   name="autosave_interval" 
+                                   class="form-control" 
+                                   min="1" 
+                                   required>
+                            <span class="form-help">How often the game automatically saves</span>
+                        </div>
+
+                        <!-- Auto Save Slots -->
+                        <div class="form-group">
+                            <label class="form-label" for="autosave_slots">Auto Save Slots</label>
+                            <input type="number" 
+                                   id="autosave_slots" 
+                                   name="autosave_slots" 
+                                   class="form-control" 
+                                   min="1" 
+                                   required>
+                            <span class="form-help">Number of auto save files to keep</span>
+                        </div>
+
+                        <!-- AFK Auto Kick -->
+                        <div class="form-group">
+                            <label class="form-label" for="afk_autokick_interval">AFK Auto Kick (minutes)</label>
+                            <input type="number" 
+                                   id="afk_autokick_interval" 
+                                   name="afk_autokick_interval" 
+                                   class="form-control" 
+                                   min="0">
+                            <span class="form-help">Time before inactive players are kicked (0 to disable)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advanced Settings Section -->
+                <div class="settings-section" data-category="advanced">
+                    <h3 class="text-lg text-dirty-white font-bold mb-4">Advanced Settings</h3>
+                    <div class="space-y-4">
+                        <!-- Advanced Settings Content -->
+                        <div class="bg-gray-dark p-4 rounded">
+                            <div class="text-yellow mb-4">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                Warning: These settings can significantly impact server performance
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <!-- Various Advanced Settings -->
+                                <div id="advanced-settings-content">
+                                    <!-- Will be populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- No Results -->
+            <div id="no-results" class="text-center py-8 hidden">
+                <i class="fas fa-search text-4xl text-gray-400 mb-2"></i>
+                <p class="text-gray-400">No settings match your search</p>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Templates -->
+<!-- Setting Templates -->
+<template id="string-setting-template">
+    <div class="form-group" data-setting="%key%">
+        <label class="form-label">%label%</label>
+        <input type="text" 
+               name="%key%" 
+               class="form-control" 
+               value="%value%"
+               %required%>
+        <span class="form-help">%description%</span>
+    </div>
+</template>
+
+<template id="number-setting-template">
+    <div class="form-group" data-setting="%key%">
+        <label class="form-label">%label%</label>
+        <input type="number" 
+               name="%key%" 
+               class="form-control" 
+               value="%value%"
+               min="%min%" 
+               max="%max%"
+               step="%step%"
+               %required%>
+        <span class="form-help">%description%</span>
+    </div>
+</template>
+
+<template id="boolean-setting-template">
+    <div class="form-group" data-setting="%key%">
+        <label class="flex items-center">
+            <input type="checkbox" 
+                   name="%key%" 
+                   class="form-checkbox"
+                   %checked%>
+            <span class="ml-2">%label%</span>
+        </label>
+        <span class="form-help">%description%</span>
+    </div>
+</template>
+
+<!-- Modal Templates -->
+<!-- Reset Confirmation Modal -->
+<template id="reset-modal-template">
+    <div class="modal-content">
+        <h3 class="text-lg font-bold mb-4">Reset Settings</h3>
+        <p class="mb-4">Are you sure you want to reset all settings to their default values? This cannot be undone.</p>
+        <div class="flex justify-end space-x-2">
+            <button type="button" class="btn btn-default" onclick="serverSettings.closeModal()">Cancel</button>
+            <button type="button" class="btn btn-danger" onclick="serverSettings.confirmReset()">Reset</button>
+        </div>
+    </div>
+</template>
+
+<!-- Import Settings Modal -->
+<template id="import-modal-template">
+    <div class="modal-content">
+        <h3 class="text-lg font-bold mb-4">Import Settings</h3>
+        <div class="space-y-4">
+            <div class="form-group">
+                <label class="form-label">Settings File</label>
+                <div class="relative">
+                    <input type="file" 
+                           id="settings-file" 
+                           accept=".json"
+                           class="hidden">
+                    <div class="flex">
+                        <div class="form-control cursor-pointer flex-grow" id="settings-file-name">
+                            Select File...
+                        </div>
+                        <button type="button" 
+                                class="btn btn-default ml-2"
+                                onclick="document.getElementById('settings-file').click()">
+                            <i class="fas fa-folder-open"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-2">
+                <button type="button" class="btn btn-default" onclick="serverSettings.closeModal()">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="serverSettings.importSettings()">Import</button>
+            </div>
+        </div>
+    </div>
+</template>
+{% endblock %}

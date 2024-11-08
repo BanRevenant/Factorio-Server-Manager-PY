@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}FSM - Server Logs{% endblock %}
+
+{% block head %}
+<script src="{{ url_for('static', filename='js/logs.js') }}" defer></script>
+{% endblock %}
+
+{% block content %}
+<div class="panel bg-gray-dark rounded-sm shadow-xl">
+    <div class="panel-header px-4 py-2 flex justify-between items-center">
+        <h2 class="text-xl text-dirty-white font-bold">Server Logs</h2>
+        <div class="flex items-center space-x-4">
+            <!-- Log Controls -->
+            <div class="flex items-center space-x-2">
+                <label class="text-white flex items-center">
+                    <input type="checkbox" 
+                           id="auto-scroll" 
+                           class="form-checkbox h-4 w-4 text-blue rounded border-gray-300" 
+                           checked>
+                    <span class="ml-2">Auto-scroll</span>
+                </label>
+                <label class="text-white flex items-center">
+                    <input type="checkbox" 
+                           id="live-updates" 
+                           class="form-checkbox h-4 w-4 text-blue rounded border-gray-300" 
+                           checked>
+                    <span class="ml-2">Live Updates</span>
+                </label>
+                <label class="text-white flex items-center">
+                    <input type="checkbox" 
+                           id="wrap-lines" 
+                           class="form-checkbox h-4 w-4 text-blue rounded border-gray-300">
+                    <span class="ml-2">Wrap Lines</span>
+                </label>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center space-x-2">
+                <button type="button" 
+                        id="clear-logs" 
+                        class="btn btn-sm btn-danger"
+                        title="Clear logs">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+                <button type="button" 
+                        id="copy-logs" 
+                        class="btn btn-sm btn-default"
+                        title="Copy to clipboard">
+                    <i class="fas fa-copy"></i>
+                </button>
+                <button type="button" 
+                        id="download-logs" 
+                        class="btn btn-sm btn-default"
+                        title="Download logs">
+                    <i class="fas fa-download"></i>
+                </button>
+                <button type="button" 
+                        id="refresh-logs" 
+                        class="btn btn-sm btn-default"
+                        title="Refresh logs">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters Bar -->
+    <div class="bg-gray-dark border-t border-b border-gray-600 px-4 py-3">
+        <div class="flex flex-wrap gap-4">
+            <!-- Search Filter -->
+            <div class="flex-grow">
+                <div class="search-container">
+                    <input type="text" 
+                           id="log-filter" 
+                           class="form-control w-full" 
+                           placeholder="Filter logs (regex supported)">
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+            </div>
+
+            <!-- Level Filter -->
+            <div class="flex items-center space-x-2 min-w-[200px]">
+                <label class="text-white whitespace-nowrap">Log Level:</label>
+                <select id="log-level" class="form-control flex-grow">
+                    <option value="all">All Levels</option>
+                    <option value="debug">Debug & Above</option>
+                    <option value="info">Info & Above</option>
+                    <option value="warning">Warning & Above</option>
+                    <option value="error">Error Only</option>
+                </select>
+            </div>
+
+            <!-- Time Range -->
+            <div class="flex items-center space-x-2">
+                <label class="text-white whitespace-nowrap">Time Range:</label>
+                <select id="time-range" class="form-control">
+                    <option value="all">All Time</option>
+                    <option value="1h">Last Hour</option>
+                    <option value="6h">Last 6 Hours</option>
+                    <option value="24h">Last 24 Hours</option>
+                    <option value="7d">Last 7 Days</option>
+                    <option value="custom">Custom Range</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Custom Date Range (hidden by default) -->
+        <div id="custom-range" class="mt-4 hidden">
+            <div class="flex space-x-4">
+                <div class="flex items-center space-x-2">
+                    <label class="text-white">From:</label>
+                    <input type="datetime-local" 
+                           id="date-from" 
+                           class="form-control">
+                </div>
+                <div class="flex items-center space-x-2">
+                    <label class="text-white">To:</label>
+                    <input type="datetime-local" 
+                           id="date-to" 
+                           class="form-control">
+                </div>
+                <button type="button" 
+                        id="apply-date-range" 
+                        class="btn btn-default">
+                    Apply
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel-content bg-gray-medium shadow-inner p-4">
+        <div class="relative">
+            <!-- Logs Output -->
+            <div id="logs-output" 
+                 class="bg-black font-mono text-sm p-4 rounded min-h-[600px] max-h-[800px] overflow-y-auto">
+                <div id="log-lines" class="space-y-1">
+                    <!-- Log lines will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Virtual Scroll Markers -->
+            <div id="scroll-anchor-top" class="absolute top-0 left-0 w-full h-4"></div>
+            <div id="scroll-anchor-bottom" class="absolute bottom-0 left-0 w-full h-4"></div>
+
+            <!-- Loading Overlay -->
+            <div id="loading-overlay" class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+                <div class="text-center">
+                    <div class="loading-spinner mb-2"></div>
+                    <div class="text-white">Loading logs...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Bar -->
+        <div class="mt-4 grid grid-cols-5 gap-4">
+            <div class="bg-gray-dark p-3 rounded">
+                <div class="text-gray-400">Total Lines</div>
+                <div id="total-lines" class="text-white font-bold">0</div>
+            </div>
+            <div class="bg-gray-dark p-3 rounded">
+                <div class="text-gray-400">Debug</div>
+                <div id="debug-lines" class="text-gray-400 font-bold">0</div>
+            </div>
+            <div class="bg-gray-dark p-3 rounded">
+                <div class="text-gray-400">Info</div>
+                <div id="info-lines" class="text-blue font-bold">0</div>
+            </div>
+            <div class="bg-gray-dark p-3 rounded">
+                <div class="text-gray-400">Warnings</div>
+                <div id="warning-lines" class="text-orange font-bold">0</div>
+            </div>
+            <div class="bg-gray-dark p-3 rounded">
+                <div class="text-gray-400">Errors</div>
+                <div id="error-lines" class="text-red font-bold">0</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Templates -->
+<!-- Log Line Template -->
+<template id="log-line-template">
+    <div class="log-line" data-level="%level%" data-timestamp="%timestamp%">
+        <span class="text-gray-400">[%time%]</span>
+        <span class="log-level %level-class%">[%level%]</span>
+        <span class="log-message %wrap-class%">%message%</span>
+    </div>
+</template>
+
+<!-- Download Options Modal Template -->
+<template id="download-modal-template">
+    <div class="modal-content">
+        <h3 class="text-lg font-bold mb-4">Download Logs</h3>
+        <form id="download-options-form" class="space-y-4">
+            <div class="form-group">
+                <label class="form-label">Format</label>
+                <select name="format" class="form-control">
+                    <option value="txt">Plain Text (.txt)</option>
+                    <option value="json">JSON (.json)</option>
+                    <option value="csv">CSV (.csv)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="flex items-center">
+                    <input type="checkbox" name="include_filtered" class="form-checkbox">
+                    <span class="ml-2">Only include filtered results</span>
+                </label>
+            </div>
+            <div class="flex justify-end space-x-2">
+                <button type="button" class="btn btn-default" onclick="logsManager.closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-success">Download</button>
+            </div>
+        </form>
+    </div>
+</template>
+{% endblock %}

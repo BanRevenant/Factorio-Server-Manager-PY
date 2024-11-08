@@ -1,0 +1,1537 @@
+/* Base Variables */
+:root {
+    /* Core Colors - From original palette */
+    --color-black: #000000;
+    --color-white: #ffffff;
+    --color-dirty-white: #e5e5e5;
+    --color-gray-dark: #1a1a1a;
+    --color-gray-medium: #2d2d2d;
+    --color-gray-light: #4a4a4a;
+    
+    /* Status Colors - From original components */
+    --color-blue: #3490dc;
+    --color-blue-light: #6cb2eb;
+    --color-green: #5eb663;
+    --color-green-light: #7dc982;
+    --color-red: #fe5a5a;
+    --color-red-light: #ff8a8a;
+    --color-orange: #e39827;
+    --color-orange-light: #f4b251;
+    --color-yellow: #ecc94b;
+    --color-yellow-light: #f6e05e;
+
+    /* Layout Values - From Layout.jsx */
+    --sidebar-width: 22rem;
+    --header-height: 4rem;
+    --panel-spacing: 1.5rem;
+    
+    /* Shadows - From original components */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+}
+
+/* Reset & Base Styles */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 16px;
+    height: 100%;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.5;
+    color: var(--color-white);
+    background-color: var(--color-black);
+    min-height: 100vh;
+}
+
+/* Layout System - Core Structure */
+.container {
+    width: 100%;
+    padding-left: 167px;  /* Matches original right padding */
+    padding-right: 167px; /* Matches original right padding */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-1 {
+    flex: 1 1 0%;
+}
+
+/* Fixed Sidebar */
+.w-88 {
+    width: 22rem;  /* Explicit width matching --sidebar-width */
+    min-height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 40;
+    overflow-y: auto;
+    background-color: var(--color-gray-dark);
+}
+
+.fixed {
+    position: fixed;
+}
+
+.top-0 {
+    top: 0;
+}
+
+.left-0 {
+    left: 0;
+}
+
+.h-screen {
+    height: 100vh;
+}
+
+/* Main Content Area */
+.flex-1.ml-88 {
+    margin-left: 22rem;  /* Matches sidebar width */
+    min-height: 100vh;
+    padding-top: 65px;   /* Original top padding */
+    width: calc(100% - 22rem);
+}
+
+.min-h-screen {
+    min-height: 100vh;
+}
+
+/* Accentuation Effects - Consistent Edge Styling */
+.accentuated {
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+    border-right: 2px solid rgba(0, 0, 0, 0.2);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.3);
+    border-left: 2px solid rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-xl);
+}
+
+.accentuated-t {
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.accentuated-r {
+    border-right: 2px solid rgba(0, 0, 0, 0.2);
+}
+
+.accentuated-b {
+    border-bottom: 2px solid rgba(0, 0, 0, 0.3);
+}
+
+.accentuated-l {
+    border-left: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.accentuated-x {
+    border-left: 2px solid rgba(0, 0, 0, 0.1);
+    border-right: 2px solid rgba(0, 0, 0, 0.2);
+}
+
+.accentuated-y {
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.3);
+}
+
+/* Glow Effects - From Button.jsx and other components */
+.hover\:glow-orange:hover {
+    box-shadow: 0 0 3px 1px rgba(227, 152, 39, 0.8);
+}
+
+.hover\:glow-green:hover {
+    box-shadow: 0 0 3px 1px rgba(94, 182, 99, 0.8);
+}
+
+.hover\:glow-red:hover {
+    box-shadow: 0 0 3px 1px rgba(254, 90, 90, 0.8);
+}
+
+/* Navigation Styling - From Layout.jsx */
+.text-white.rounded-sm.bg-black.shadow-inner.mx-4.p-1 {
+    background-color: var(--color-black);
+    border-radius: 0.25rem;
+    padding: 0.25rem;
+    margin: 1rem;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.text-white.rounded-sm.bg-black.shadow-inner.mx-4.p-1 a {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    margin-bottom: 0.25rem;
+    background-color: var(--color-gray-light);
+    color: var(--color-black);
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.text-white.rounded-sm.bg-black.shadow-inner.mx-4.p-1 a:last-child {
+    margin-bottom: 0;
+}
+
+.text-white.rounded-sm.bg-black.shadow-inner.mx-4.p-1 a.bg-orange,
+.text-white.rounded-sm.bg-black.shadow-inner.mx-4.p-1 a:hover {
+    background-color: var(--color-orange);
+}
+
+/* Status Indicators */
+.status-indicator {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.25rem;
+    font-weight: bold;
+    font-size: 0.875rem;
+}
+
+/* Server Status Variants */
+.status-indicator.running {
+    background-color: var(--color-green);
+    color: var(--color-black);
+}
+
+.status-indicator.stopped {
+    background-color: var(--color-red);
+    color: var(--color-black);
+}
+
+.status-indicator.loading {
+    background-color: var(--color-blue);
+    color: var(--color-black);
+}
+
+/* Badges */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.badge-blue {
+    background-color: var(--color-blue);
+    color: var(--color-black);
+}
+
+.badge-green {
+    background-color: var(--color-green);
+    color: var(--color-black);
+}
+
+.badge-red {
+    background-color: var(--color-red);
+    color: var(--color-black);
+}
+
+.badge-orange {
+    background-color: var(--color-orange);
+    color: var(--color-black);
+}
+
+
+
+/* Spacing Utilities - Used throughout components */
+.mx-4 {
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+
+.mb-1 {
+    margin-bottom: 0.25rem;
+}
+
+.mb-2 {
+    margin-bottom: 0.5rem;
+}
+
+.mb-4 {
+    margin-bottom: 1rem;
+}
+
+.mb-6 {
+    margin-bottom: 1.5rem;
+}
+
+.mb-8 {
+    margin-bottom: 2rem;
+}
+
+.mt-auto {
+    margin-top: auto;
+}
+
+.py-2 {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.py-4 {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.px-2 {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+.px-4 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+.p-1 {
+    padding: 0.25rem;
+}
+
+/* Text Utilities - From components */
+.text-xl {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+}
+
+.text-lg {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+}
+
+.font-bold {
+    font-weight: 700;
+}
+
+.text-black {
+    color: var(--color-black);
+}
+
+.text-white {
+    color: var(--color-white);
+}
+
+.text-dirty-white {
+    color: var(--color-dirty-white);
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* Background Colors - From components */
+.bg-black {
+    background-color: var(--color-black);
+}
+
+.bg-gray-dark {
+    background-color: var(--color-gray-dark);
+}
+
+.bg-gray-light {
+    background-color: var(--color-gray-light);
+}
+
+.bg-orange {
+    background-color: var(--color-orange);
+}
+
+.bg-red {
+    background-color: var(--color-red);
+}
+
+.bg-green {
+    background-color: var(--color-green);
+}
+
+/* Button Styles - From Button.jsx */
+button {
+    cursor: pointer;
+    border: none;
+    outline: none;
+    font-family: inherit;
+}
+
+/* Button Base */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    /* Adding accentuated effect to all buttons */
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+    border-right: 2px solid rgba(0, 0, 0, 0.2);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.3);
+    border-left: 2px solid rgba(0, 0, 0, 0.1);
+	display: inline-flex;
+    align-items: center;  /* Vertically centers the icon with text */
+    gap: 0.5rem;         /* Creates consistent spacing between icon and text */
+}
+
+/* Icon specific alignment */
+.btn svg,
+.btn img,
+.btn i {
+    display: inline-flex;  /* Ensures icon itself is properly aligned */
+    align-items: center;
+    justify-content: center;
+    width: 1em;           /* Consistent width based on font size */
+    height: 1em;          /* Consistent height based on font size */
+}
+
+/* If using Font Awesome or similar */
+.btn .fa,
+.btn .fas,
+.btn .far,
+.btn .fab {
+    font-size: 0.875em;  /* Slightly smaller than text for visual balance */
+    line-height: 1;      /* Prevents line-height issues */
+}
+
+/* Right-aligned icons */
+.btn.icon-right {
+    flex-direction: row-reverse;
+}
+
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.w-full {
+    width: 100%;
+}
+
+/* Add edge styling to main content area and proper spacing */
+.flex-1.ml-88 {
+    margin-left: 22rem;  /* This is your sidebar width */
+    padding: 65px 167px 0 167px;  /* Top padding of 65px and right padding of 167px */
+}
+
+
+/* Panel containers need this */
+.panel {
+    background-color: var(--color-gray-dark);
+    border-radius: 0.25rem;
+    margin-bottom: var(--panel-spacing);
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+    border-right: 2px solid rgba(0, 0, 0, 0.2);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.3);
+    border-left: 2px solid rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-xl);
+}
+
+.container.mx-auto.px-4.md\:px-6 {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.panel-header {
+    padding: 1rem;
+    background-color: var(--color-gray-dark);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+/* Panel Footer */
+.panel-footer {
+    padding: 1rem;
+    background-color: var(--color-gray-dark);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+/* Nested Panels */
+.panel .panel {
+    margin-bottom: 0;
+    box-shadow: none;
+}
+
+
+.panel-content {
+    background-color: var(--color-gray-medium);
+    padding: 1rem;
+    box-shadow: var(--shadow-inner);
+}
+
+/* Form Styles - From various form components */
+input, select, textarea {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    background-color: var(--color-white);
+    border: 1px solid var(--color-gray-light);
+    border-radius: 0.25rem;
+    color: var(--color-black);
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--color-blue);
+    box-shadow: 0 0 0 2px rgba(52, 144, 220, 0.25);
+}
+
+/* Table Styles - From various components */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    border-bottom: 2px solid var(--color-gray-light);
+}
+
+/* Body */
+td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--color-gray-medium);
+}
+
+/* Hover effect on rows */
+tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Actions column */
+td.actions {
+    white-space: nowrap;
+    width: 1%;
+}
+
+/* Icons in tables */
+.table-icon {
+    color: var(--color-gray-light);
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.table-icon:hover {
+    color: var(--color-orange);
+}
+
+/* Status indicators in tables */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Flash Messages - From Flash.jsx */
+#flash-messages {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 50;
+}
+
+.flash-message {
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    max-width: 24rem;
+    box-shadow: var(--shadow-lg);
+}
+
+.flash-message.red {
+    background-color: var(--color-red);
+    color: var(--color-black);
+}
+
+.flash-message.green {
+    background-color: var(--color-green);
+    color: var(--color-black);
+}
+
+/* Modal Styles - From Modal.jsx */
+#modal-root {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+    display: none;
+}
+
+#modal-root.active {
+    display: block;
+}
+
+/* Modal System */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+}
+
+.modal {
+    background-color: var(--color-gray-dark);
+    border-radius: 0.25rem;
+    width: 90%;
+    max-width: 32rem;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    /* Accentuated effect */
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+    border-right: 2px solid rgba(0, 0, 0, 0.2);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.3);
+    border-left: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-title {
+    color: var(--color-dirty-white);
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.modal-content {
+    padding: 1rem;
+    background-color: var(--color-gray-medium);
+    box-shadow: var(--shadow-inner);
+}
+
+.modal-footer {
+    padding: 1rem;
+    background-color: var(--color-gray-dark);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+/* Loading States */
+.loading-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-gray-light);
+}
+
+.loading-spinner {
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid var(--color-gray-light);
+    border-top-color: var(--color-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Modal Animations */
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.modal {
+    animation: modalFadeIn 0.2s ease-out;
+}
+
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive Design - From Layout.jsx and other components */
+@media (max-width: 768px) {
+    .w-88 {
+        width: 100%;
+    }
+    
+    .fixed {
+        position: relative;
+    }
+    
+    .ml-88 {
+        margin-left: 0;
+    }
+    
+    .container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+
+/* Utility Classes - Used throughout components */
+.rounded-sm {
+    border-radius: 0.25rem;
+}
+
+.shadow-inner {
+    box-shadow: var(--shadow-inner);
+}
+
+.shadow-xl {
+    box-shadow: var(--shadow-xl);
+}
+
+.overflow-y-auto {
+    overflow-y: auto;
+}
+
+.relative {
+    position: relative;
+}
+
+.hidden {
+    display: none;
+}
+
+.block {
+    display: block;
+}
+
+.flex-grow {
+    flex-grow: 1;
+}
+
+.z-50 {
+    z-index: 50;
+}
+
+/* Hover States */
+.hover\:bg-orange:hover {
+    background-color: var(--color-orange);
+}
+
+.hover\:bg-red-light:hover {
+    background-color: var(--color-red-light);
+}
+
+.hover\:bg-green-light:hover {
+    background-color: var(--color-green-light);
+}
+
+/* Console/Logs Specific Styles */
+.console-output {
+    font-family: monospace;
+    background-color: var(--color-black);
+    padding: 1rem;
+    border-radius: 0.25rem;
+    height: 400px;
+    overflow-y: auto;
+}
+
+/* Special Elements */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-gray-dark);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-gray-light);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-orange);
+}
+
+/* Print Styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    body {
+        background: white;
+        color: black;
+    }
+}
+
+/* Quick Actions Section - From Controls.jsx */
+.grid {
+    display: grid;
+    gap: 1rem;
+}
+
+@media (min-width: 768px) {
+    .grid.md\:grid-cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+/* Quick Action Cards */
+.space-y-2 > * {
+    margin-bottom: 0.5rem;
+}
+
+.space-y-2 > *:last-child {
+    margin-bottom: 0;
+}
+
+/* Quick Action Headers */
+.text-lg.text-dirty-white.font-bold {
+    font-size: 1.125rem;
+    color: var(--color-dirty-white);
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+/* Quick Action Buttons - Matching sidebar nav style exactly */
+.btn.btn-default.w-full.flex.items-center.justify-center {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    background-color: var(--color-gray-light);
+    color: var(--color-black);
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+    text-align: center;
+    /* Adding accentuated effect to match sidebar */
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+    border-right: 2px solid rgba(0, 0, 0, 0.2);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.3);
+    border-left: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.btn.btn-default.w-full.flex.items-center.justify-center:hover {
+    background-color: var(--color-orange);
+    box-shadow: 0 0 3px 1px rgba(227, 152, 39, 0.8);
+}
+
+
+/* Mods Page Styling - From Mods.jsx and related components */
+
+/* Header Actions Area */
+.flex.justify-between.items-center {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+/* Search/Filter Input */
+input[type="search"], 
+input[type="text"].search-input {
+    background-color: var(--color-white);
+    border: 1px solid var(--color-gray-light);
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    width: 250px;
+    color: var(--color-black);
+}
+
+/* Action Buttons Group */
+.flex.gap-2 {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Action Buttons */
+.btn-danger,
+.btn-default,
+.btn-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-weight: bold;
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+    border-right: 2px solid rgba(0, 0, 0, 0.2);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.3);
+    border-left: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.btn-danger {
+    background-color: var(--color-red);
+    color: var(--color-black);
+}
+
+/* Button Variants */
+.btn-default {
+    background-color: var(--color-gray-light);
+    color: var(--color-black);
+}
+
+.btn-success {
+    background-color: var(--color-green);
+    color: var(--color-black);
+}
+
+.btn-danger {
+    background-color: var(--color-red);
+    color: var(--color-black);
+}
+
+/* Button Hover States */
+.btn-default:hover {
+    background-color: var(--color-orange);
+    box-shadow: 0 0 3px 1px rgba(227, 152, 39, 0.8);
+}
+
+.btn-success:hover {
+    background-color: var(--color-green-light);
+    box-shadow: 0 0 3px 1px rgba(94, 182, 99, 0.8);
+}
+
+.btn-danger:hover {
+    background-color: var(--color-red-light);
+    box-shadow: 0 0 3px 1px rgba(254, 90, 90, 0.8);
+}
+
+/* Button Sizes */
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.125rem;
+}
+
+/* Disabled State */
+.btn:disabled,
+.btn.disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+/* Mods Table */
+.w-full {
+    width: 100%;
+}
+
+table.w-full {
+    border-collapse: collapse;
+    margin-bottom: 1rem;
+}
+
+table.w-full th {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    color: var(--color-white);
+}
+
+table.w-full td {
+    padding: 0.75rem 1rem;
+    border-top: 1px solid var(--color-gray-medium);
+}
+
+/* Loading State */
+.text-center.py-8 {
+    text-align: center;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+/* Mod Packs Section */
+.panel .panel-header {
+    background-color: var(--color-gray-dark);
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Create Pack Button */
+.create-pack-button {
+    background-color: var(--color-gray-light);
+    color: var(--color-black);
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+.create-pack-button:hover {
+    background-color: var(--color-orange);
+    box-shadow: 0 0 3px 1px rgba(227, 152, 39, 0.8);
+}
+
+/* Loading Spinner */
+.loading-mods {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+/* Table Actions */
+.text-red {
+    color: var(--color-red);
+}
+
+.text-blue {
+    color: var(--color-blue);
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.hover\:text-red-light:hover {
+    color: var(--color-red-light);
+}
+
+.hover\:text-blue-light:hover {
+    color: var(--color-blue-light);
+}
+
+/* Server Settings Page Styling - From ServerSettings.jsx */
+
+/* Settings Form Layout */
+.mb-4 .settings-section {
+    margin-bottom: 2rem;
+}
+
+/* Settings Category */
+.text-lg.text-dirty-white.font-bold.mb-4 {
+    font-size: 1.125rem;
+    color: var(--color-dirty-white);
+    font-weight: bold;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--color-gray-light);
+}
+
+/* Form Elements */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+/* Labels */
+.form-label {
+    display: block;
+    color: var(--color-white);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+/* Setting Label */
+.form-group label {
+    display: block;
+    color: var(--color-white);
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+/* Inputs */
+input[type="text"],
+input[type="password"],
+input[type="number"],
+input[type="email"],
+input[type="search"],
+select,
+textarea {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    background-color: var(--color-white);
+    border: 1px solid var(--color-gray-light);
+    border-radius: 0.25rem;
+    color: var(--color-black);
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+/* Input focus states */
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--color-blue);
+    box-shadow: 0 0 0 2px rgba(52, 144, 220, 0.25);
+}
+
+/* Input error states */
+.input-error {
+    border-color: var(--color-red);
+}
+
+/* Form help text */
+.form-help {
+    color: var(--color-gray-light);
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+.error-message {
+    color: var(--color-red);
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+/* Checkboxes and Radios */
+.checkbox-wrapper,
+.radio-wrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+    margin-right: 0.5rem;
+}
+
+/* Settings Inputs */
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="password"],
+.form-group select {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    background-color: var(--color-white);
+    border: 1px solid var(--color-gray-light);
+    border-radius: 0.25rem;
+    color: var(--color-black);
+}
+
+/* Settings Checkboxes */
+.form-group .checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.form-group input[type="checkbox"] {
+    width: auto;
+    margin-right: 0.5rem;
+}
+
+/* Settings Description/Help Text */
+.text-sm.italic {
+    font-size: 0.875rem;
+    font-style: italic;
+    color: var(--color-gray-light);
+    margin-top: 0.25rem;
+}
+
+/* Visibility Settings */
+.flex.gap-4 {
+    display: flex;
+    gap: 1rem;
+}
+
+/* Settings Arrays (Tags, Admins) */
+.form-group input[type="text"].array-input {
+    margin-bottom: 0.5rem;
+}
+
+/* Save Button Section */
+.panel-actions {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-gray-light);
+}
+
+/* Save Button */
+.btn.btn-success {
+    background-color: var(--color-green);
+    color: var(--color-black);
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    /* Adding accentuated effect */
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+    border-right: 2px solid rgba(0, 0, 0, 0.2);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.3);
+    border-left: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.btn.btn-success:hover {
+    background-color: var(--color-green-light);
+    box-shadow: 0 0 3px 1px rgba(94, 182, 99, 0.8);
+}
+
+/* Settings Categories Navigation */
+.settings-nav {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 0.75rem;
+    background-color: var(--color-gray-dark);
+    border-radius: 0.25rem;
+}
+
+.settings-nav button {
+    padding: 0.5rem 1rem;
+    background-color: var(--color-gray-light);
+    color: var(--color-black);
+    border-radius: 0.25rem;
+    font-weight: bold;
+    cursor: pointer;
+    /* Adding accentuated effect */
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+    border-right: 2px solid rgba(0, 0, 0, 0.2);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.3);
+    border-left: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.settings-nav button:hover {
+    background-color: var(--color-orange);
+    box-shadow: 0 0 3px 1px rgba(227, 152, 39, 0.8);
+}
+
+.settings-nav button.active {
+    background-color: var(--color-orange);
+}
+
+/* Settings Search */
+.settings-search {
+    position: relative;
+    max-width: 300px;
+    margin-bottom: 1rem;
+}
+
+.settings-search input {
+    width: 100%;
+    padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+    background-color: var(--color-white);
+    border: 1px solid var(--color-gray-light);
+    border-radius: 0.25rem;
+    color: var(--color-black);
+}
+
+/* Loading State */
+.settings-loading {
+    text-align: center;
+    padding: 2rem;
+}
+
+.settings-loading .loading-spinner {
+    margin: 0 auto 1rem;
+}
+
+/* Console Page Styling - From Console.jsx */
+
+/* Console Header */
+.panel-header.px-4.py-2.flex.justify-between.items-center {
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--color-gray-dark);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Console Controls Group */
+.flex.items-center.space-x-4 {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Individual Control Groups */
+.flex.items-center.space-x-2 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Checkbox Controls */
+.console-control-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-white);
+}
+
+/* Level Selector */
+select.level-select {
+    background-color: var(--color-white);
+    border: 1px solid var(--color-gray-light);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    color: var(--color-black);
+}
+
+/* Search Input Container */
+.search-container {
+    position: relative;
+    min-width: 200px;  /* Ensures minimum width for search field */
+}
+
+/* Search Icon */
+.search-container .search-icon {
+    position: absolute;
+    left: 0.75rem;  /* Position from left instead of right */
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-gray-light);
+    z-index: 1;
+    pointer-events: none;  /* Allows clicking through to input */
+}
+
+/* Search Input */
+.search-container .search-input,
+.search-container input[type="text"] {
+    width: 100%;
+    padding: 0.5rem 0.75rem 0.5rem 2.5rem;  /* Added left padding for icon */
+    background-color: var(--color-white);
+    border: 1px solid var(--color-gray-light);
+    border-radius: 0.25rem;
+    color: var(--color-black);
+}
+
+/* Clear Button (optional) */
+.search-clear {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: var(--color-gray-light);
+}
+
+/* Console Output Area */
+#console-output {
+    background-color: var(--color-black);
+    color: var(--color-white);
+    font-family: monospace;
+    padding: 1rem;
+    margin: 1rem 0;
+    height: 400px;
+    overflow-y: auto;
+    border-radius: 0.25rem;
+}
+
+/* Console Input Area */
+.console-input-container {
+    display: flex;
+    align-items: center;
+    background-color: var(--color-black);
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    margin-top: 1rem;
+}
+
+/* Command Prompt Symbol */
+.command-prompt {
+    color: var(--color-green);
+    margin-right: 0.5rem;
+    font-family: monospace;
+    font-weight: bold;
+}
+
+/* Command Input */
+.command-input {
+    flex-grow: 1;
+    background-color: transparent;
+    border: none;
+    color: var(--color-white);
+    font-family: monospace;
+    outline: none;
+}
+
+/* Console Server Status */
+#console-status {
+    margin-left: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+}
+
+/* Control Buttons */
+.control-button {
+    background-color: var(--color-gray-light);
+    color: var(--color-black);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    /* Adding accentuated effect */
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+    border-right: 2px solid rgba(0, 0, 0, 0.2);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.3);
+    border-left: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.control-button:hover {
+    background-color: var(--color-orange);
+    box-shadow: 0 0 3px 1px rgba(227, 152, 39, 0.8);
+}
+
+/* Log Messages */
+.log-line {
+    margin: 0.25rem 0;
+    font-family: monospace;
+}
+
+.log-timestamp {
+    color: var(--color-gray-light);
+}
+
+.log-level {
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    margin: 0 0.5rem;
+    font-size: 0.875rem;
+}
+
+.log-message {
+    color: var(--color-white);
+}
+
+/* Server Offline Message */
+.server-offline {
+    text-align: center;
+    padding: 2rem;
+    color: var(--color-red);
+}
+
+
+/* Login Page Styling */
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: var(--color-black);
+    padding: 1rem;
+}
+
+.login-box {
+    max-width: 400px;  /* Limit width of login box */
+    width: 100%;
+}
+
+.login-panel {
+    background-color: var(--color-gray-dark);
+    border-radius: 0.25rem;
+    /* Adding accentuated effect */
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+    border-right: 2px solid rgba(0, 0, 0, 0.2);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.3);
+    border-left: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.login-header {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.login-header h1 {
+    color: var(--color-dirty-white);
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.login-content {
+    background-color: var(--color-gray-medium);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-inner);
+}
+
+.login-form-group {
+    margin-bottom: 1.5rem;
+}
+
+.login-form-group label {
+    display: block;
+    color: var(--color-white);
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.login-form-group input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--color-gray-light);
+    border-radius: 0.25rem;
+    background-color: var(--color-white);
+    color: var(--color-black);
+}
+
+.login-button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: var(--color-green);
+    color: var(--color-black);
+    border-radius: 0.25rem;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+    /* Adding accentuated effect */
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+    border-right: 2px solid rgba(0, 0, 0, 0.2);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.3);
+    border-left: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.login-button:hover {
+    background-color: var(--color-green-light);
+    box-shadow: 0 0 3px 1px rgba(94, 182, 99, 0.8);
+}
+
+/* Table Styles */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    background-color: var(--color-gray-medium);
+    border-radius: 0.25rem;
+    box-shadow: var(--shadow-inner);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+/* Header */
+thead {
+    background-color: var(--color-gray-dark);
+}
+
+th {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--color-dirty-white);
+    border-bottom: 2px solid var(--color-gray-light);
+}

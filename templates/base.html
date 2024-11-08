@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{% block title %}Factorio Server Manager{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="{{ url_for('static', filename='js/utils.js') }}" defer></script>
+    {% block head %}{% endblock %}
+</head>
+<body class="bg-black h-full">
+{% if not hide_layout|default(false) %}
+<div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <div class="w-88 fixed top-0 left-0 h-screen bg-gray-dark overflow-y-auto">
+        <!-- Header -->
+        <div class="py-4 px-2 accentuated">
+            <div class="mx-4 text-dirty-white text-xl">Factorio Server Manager</div>
+        </div>
+
+        <!-- Server Status -->
+        <div class="py-4 px-2 accentuated">
+            <h1 class="text-dirty-white text-lg mb-2 mx-4">Server Status</h1>
+            <div id="status-display" class="mx-4 mb-4 text-center">
+                <div id="server-status" class="status-indicator">Loading...</div>
+            </div>
+        </div>
+
+        <!-- Server Management -->
+        <div class="py-4 px-2 accentuated">
+            <h1 class="text-dirty-white text-lg mb-2 mx-4">Server Management</h1>
+            <div class="text-white rounded-sm bg-black shadow-inner mx-4 p-1">
+                <a href="{{ url_for('index') }}" 
+                   class="block mb-1 hover:glow-orange accentuated bg-gray-light hover:bg-orange text-black font-bold py-2 px-4 {% if request.endpoint == 'index' %}bg-orange{% endif %}">Controls</a>
+                <a href="{{ url_for('saves') }}"
+                   class="block mb-1 hover:glow-orange accentuated bg-gray-light hover:bg-orange text-black font-bold py-2 px-4 {% if request.endpoint == 'saves' %}bg-orange{% endif %}">Saves</a>
+                <a href="{{ url_for('mods') }}"
+                   class="block mb-1 hover:glow-orange accentuated bg-gray-light hover:bg-orange text-black font-bold py-2 px-4 {% if request.endpoint == 'mods' %}bg-orange{% endif %}">Mods</a>
+                <a href="{{ url_for('server_settings') }}"
+                   class="block mb-1 hover:glow-orange accentuated bg-gray-light hover:bg-orange text-black font-bold py-2 px-4 {% if request.endpoint == 'server_settings' %}bg-orange{% endif %}">Server Settings</a>
+                <a href="{{ url_for('game_settings') }}"
+                   class="block mb-1 hover:glow-orange accentuated bg-gray-light hover:bg-orange text-black font-bold py-2 px-4 {% if request.endpoint == 'game_settings' %}bg-orange{% endif %}">Game Settings</a>
+                <a href="{{ url_for('console') }}"
+                   class="block mb-1 hover:glow-orange accentuated bg-gray-light hover:bg-orange text-black font-bold py-2 px-4 {% if request.endpoint == 'console' %}bg-orange{% endif %}">Console</a>
+                <a href="{{ url_for('logs') }}"
+                   class="block hover:glow-orange accentuated bg-gray-light hover:bg-orange text-black font-bold py-2 px-4 {% if request.endpoint == 'logs' %}bg-orange{% endif %}">Logs</a>
+            </div>
+        </div>
+
+        <!-- FSM Administration -->
+        <div class="py-4 px-2 accentuated">
+            <h1 class="text-dirty-white text-lg mb-2 mx-4">FSM Administration</h1>
+            <div class="text-white rounded-sm bg-black shadow-inner mx-4 p-1">
+                <a href="{{ url_for('user_management') }}"
+                   class="block mb-1 hover:glow-orange accentuated bg-gray-light hover:bg-orange text-black font-bold py-2 px-4 {% if request.endpoint == 'user_management' %}bg-orange{% endif %}">Users</a>
+                <a href="{{ url_for('help') }}"
+                   class="block hover:glow-orange accentuated bg-gray-light hover:bg-orange text-black font-bold py-2 px-4 {% if request.endpoint == 'help' %}bg-orange{% endif %}">Help</a>
+            </div>
+        </div>
+
+        <!-- Logout -->
+        <div class="py-4 px-2 accentuated mt-auto">
+            <div class="text-white rounded-sm bg-black shadow-inner mx-4 p-1">
+                <button onclick="auth.logout()" 
+                        class="w-full bg-red hover:bg-red-light hover:glow-red text-black font-bold py-2 px-4 accentuated">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 ml-88" role="main">
+        <div class="container mx-auto px-4">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+</div>
+
+{% else %}
+    {% block full_content %}{% endblock %}
+{% endif %}
+
+<!-- Flash Messages Container -->
+<div id="flash-messages" class="fixed bottom-0 right-0 mr-8 mb-8 z-50"></div>
+
+<!-- Modal Root -->
+<div id="modal-root"></div>
+
+<!-- CSRF Token -->
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

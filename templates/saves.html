@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block title %}FSM - Saves Management{% endblock %}
+
+{% block head %}
+<script src="{{ url_for('static', filename='js/saves.js') }}" defer></script>
+{% endblock %}
+
+{% block content %}
+<div class="grid lg:grid-cols-2 gap-6">
+    <!-- Create Save Panel -->
+    <div class="panel bg-gray-dark rounded-sm shadow-xl">
+        <div class="panel-header px-4 py-2">
+            <h2 class="text-xl text-dirty-white font-bold">Create Save</h2>
+        </div>
+        <div class="panel-content bg-gray-medium shadow-inner p-4">
+            <div id="create-save-content">
+                <!-- Save Creation Form -->
+                <form id="create-save-form" class="space-y-4">
+                    <div class="form-group">
+                        <label class="form-label" for="savefile">
+                            Save Name
+                        </label>
+                        <input type="text" 
+                               id="savefile" 
+                               name="savefile" 
+                               class="form-control" 
+                               required
+                               pattern="^[a-zA-Z0-9-_\.]+$"
+                               placeholder="Enter save name">
+                        <span class="form-help">Only letters, numbers, dashes, underscores, and dots are allowed.</span>
+                        <span class="form-error hidden" data-error="savefile"></span>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-plus mr-2"></i>
+                            Create Save
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <!-- Server Running Warning -->
+            <div id="create-save-disabled" class="text-red-light py-4 hidden">
+                Create a new Save is only possible if the Factorio server is not running.
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Save Panel -->
+    <div class="panel bg-gray-dark rounded-sm shadow-xl">
+        <div class="panel-header px-4 py-2">
+            <h2 class="text-xl text-dirty-white font-bold">Upload Save</h2>
+        </div>
+        <div class="panel-content bg-gray-medium shadow-inner p-4">
+            <form id="upload-save-form" class="space-y-4">
+                <div class="form-group">
+                    <label class="form-label" for="save_file">
+                        Save File
+                    </label>
+                    <div class="relative">
+                        <input type="file" 
+                               id="save_file" 
+                               name="save_file"
+                               class="hidden" 
+                               accept=".zip"
+                               required>
+                        <div class="flex">
+                            <div class="form-control cursor-pointer flex-grow" id="file-name-display">
+                                Select File...
+                            </div>
+                            <button type="button" 
+                                    class="btn btn-default ml-2" 
+                                    onclick="document.getElementById('save_file').click()">
+                                <i class="fas fa-folder-open"></i>
+                            </button>
+                        </div>
+                        <span class="form-error hidden" data-error="save_file"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-upload mr-2"></i>
+                        Upload Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Saves List Panel -->
+<div class="panel bg-gray-dark rounded-sm shadow-xl mt-6">
+    <div class="panel-header px-4 py-2 flex justify-between items-center">
+        <h2 class="text-xl text-dirty-white font-bold">Saves</h2>
+        <div class="flex gap-2">
+            <div class="search-container">
+                <input type="text" 
+                       id="save-search" 
+                       class="form-control" 
+                       placeholder="Search saves...">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+            <button type="button" 
+                    id="refresh-saves" 
+                    class="btn btn-default"
+                    title="Refresh saves list">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+        </div>
+    </div>
+    <div class="panel-content bg-gray-medium shadow-inner p-4">
+        <div class="overflow-x-auto">
+            <table class="table w-full">
+                <thead>
+                    <tr>
+                        <th class="text-left">Name</th>
+                        <th class="text-left">Last Modified</th>
+                        <th class="text-left">Size</th>
+                        <th class="text-center">Players</th>
+                        <th class="text-center">Mods</th>
+                        <th class="text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="saves-list">
+                    <tr>
+                        <td colspan="6" class="text-center py-4">
+                            <i class="fas fa-spinner fa-spin mr-2"></i>
+                            Loading saves...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Empty State -->
+        <div id="no-saves" class="text-center py-8 hidden">
+            <i class="fas fa-save text-4xl text-gray-400 mb-2"></i>
+            <p class="text-gray-400">No saves found</p>
+        </div>
+    </div>
+</div>
+
+<!-- Save Details Modal Template -->
+<template id="save-details-modal-template">
+    <div class="modal-content">
+        <h3 class="text-lg font-bold mb-4">Save Details - %name%</h3>
+        <div class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="text-sm text-gray-400">Created</label>
+                    <p class="font-medium">%created%</p>
+                </div>
+                <div>
+                    <label class="text-sm text-gray-400">Last Modified</label>
+                    <p class="font-medium">%modified%</p>
+                </div>
+                <div>
+                    <label class="text-sm text-gray-400">Size</label>
+                    <p class="font-medium">%size%</p>
+                </div>
+                <div>
+                    <label class="text-sm text-gray-400">Game Version</label>
+                    <p class="font-medium">%version%</p>
+                </div>
+            </div>
+
+            <!-- Players Section -->
+            <div>
+                <h4 class="text-sm text-gray-400 mb-2">Players</h4>
+                <div class="bg-gray-dark p-2 rounded max-h-32 overflow-y-auto">
+                    %players%
+                </div>
+            </div>
+
+            <!-- Mods Section -->
+            <div>
+                <h4 class="text-sm text-gray-400 mb-2">Mods</h4>
+                <div class="bg-gray-dark p-2 rounded max-h-48 overflow-y-auto">
+                    %mods%
+                </div>
+            </div>
+        </div>
+        <div class="flex justify-end space-x-2 mt-6">
+            <button class="btn btn-default" onclick="savesManager.closeModal()">Close</button>
+        </div>
+    </div>
+</template>
+
+<!-- Delete Confirmation Modal Template -->
+<template id="delete-save-modal-template">
+    <div class="modal-content">
+        <h3 class="text-lg font-bold mb-4">Delete Save</h3>
+        <p class="mb-4">Are you sure you want to delete "%name%"? This action cannot be undone.</p>
+        <div class="flex justify-end space-x-2">
+            <button class="btn btn-default" onclick="savesManager.closeModal()">Cancel</button>
+            <button class="btn btn-danger" onclick="savesManager.confirmDelete()">Delete</button>
+        </div>
+    </div>
+</template>
+
+<!-- Save Row Template -->
+<template id="save-row-template">
+    <tr class="hover:bg-gray-dark transition-colors">
+        <td class="py-2">%name%</td>
+        <td class="py-2">%modified%</td>
+        <td class="py-2">%size%</td>
+        <td class="py-2 text-center">%players%</td>
+        <td class="py-2 text-center">%mods%</td>
+        <td class="py-2 text-right">
+            <div class="flex justify-end space-x-2">
+                <button class="text-blue hover:text-blue-light"
+                        onclick="savesManager.viewDetails('%name%')"
+                        title="View Details">
+                    <i class="fas fa-info-circle"></i>
+                </button>
+                <a href="/api/saves/dl/%name%" 
+                   class="text-gray-400 hover:text-white"
+                   title="Download Save">
+                    <i class="fas fa-download"></i>
+                </a>
+                <button class="text-red hover:text-red-light"
+                        onclick="savesManager.deleteSave('%name%')"
+                        title="Delete Save">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </div>
+        </td>
+    </tr>
+</template>
+{% endblock %}
