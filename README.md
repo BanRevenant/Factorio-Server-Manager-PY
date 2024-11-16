@@ -1,11 +1,8 @@
 # Factorio Server Manager-PY
 
-A comprehensive rewrite of the original Factorio Server Manager (previously written in Go), now built entirely in Python. This updated version introduces new features, including:
+This initially started as a comprehensive rewrite of the original Factorio Server Manager (previously written in Go), I have now taken the project in a slightly different direction. This new project is now built entirely in Python. This repository is the front end for an in development project called D-Wire found here https://github.com/BanRevenant/D-Wire
 
-- **Enhanced Data Logging**
-- **Discord Bot Integration**
-- Additional functionality to improve server management
-- Server stats and monitoring
+This portion of the project will gradually pickup in traction as D-Wire gets closer to completion.
 
 ## Preview
 
